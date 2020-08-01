@@ -2,10 +2,11 @@
 import 'dart:ui';
 
 import 'package:xml/xml.dart';
-import 'package:path_drawing/path_drawing.dart';
+import './path_drawing/path_drawing.dart';
 import 'package:vector_math/vector_math_64.dart';
 
 import 'avd/xml_parsers.dart';
+import 'ui_proxies/custom_path.dart';
 import 'vector_drawable.dart';
 
 class DrawableAvdRoot extends DrawableRoot {
@@ -16,13 +17,14 @@ class DrawableAvdRoot extends DrawableRoot {
 
 /// An SVG Shape element that will be drawn to the canvas.
 class DrawableAvdPath extends DrawableShape {
-  const DrawableAvdPath(Path path, DrawableStyle style) : super(path, style);
+  const DrawableAvdPath(CustomPath path, DrawableStyle style)
+      : super(path, style);
 
   /// Creates a [DrawableAvdPath] from an XML <path> element
   factory DrawableAvdPath.fromXml(XmlElement el) {
     final String d =
         getAttribute(el.attributes, 'pathData', def: '', namespace: androidNS);
-    final Path path = parseSvgPathData(d);
+    final CustomPath path = parseSvgPathData(d) as CustomPath;
     assert(path != null);
 
     path.fillType = parsePathFillType(el.attributes);

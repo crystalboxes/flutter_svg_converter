@@ -3,7 +3,8 @@ import 'dart:collection';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
-import 'package:path_drawing/path_drawing.dart';
+import '../ui_proxies/custom_path.dart';
+import '../path_drawing/path_drawing.dart';
 import 'package:vector_math/vector_math_64.dart';
 import 'package:xml/xml_events.dart' hide parseEvents;
 
@@ -18,7 +19,7 @@ import 'xml_parsers.dart';
 final Set<String> _unhandledElements = <String>{'title', 'desc'};
 
 typedef _ParseFunc = Future<void> Function(SvgParserState parserState);
-typedef _PathFunc = Path Function(List<XmlEventAttribute> attributes);
+typedef _PathFunc = CustomPath Function(List<XmlEventAttribute> attributes);
 
 const Map<String, _ParseFunc> _svgElementParsers = <String, _ParseFunc>{
   'svg': _Elements.svg,
@@ -409,8 +410,8 @@ class _Elements {
   static Future<void> clipPath(SvgParserState parserState) {
     final String id = buildUrlIri(parserState.attributes);
 
-    final List<Path> paths = <Path>[];
-    Path currentPath;
+    final List<CustomPath> paths = <CustomPath>[];
+    CustomPath currentPath;
     for (XmlEvent event in parserState._readSubtree()) {
       if (event is XmlEndElementEvent) {
         continue;
@@ -419,7 +420,7 @@ class _Elements {
         final _PathFunc pathFn = _svgPathFuncs[event.name];
 
         if (pathFn != null) {
-          final Path nextPath = applyTransformIfNeeded(
+          final CustomPath nextPath = applyTransformIfNeeded(
             pathFn(parserState.attributes),
             parserState.attributes,
           );
@@ -599,20 +600,20 @@ class _Elements {
 }
 
 class _Paths {
-  static Path circle(List<XmlEventAttribute> attributes) {
+  static CustomPath circle(List<XmlEventAttribute> attributes) {
     final double cx = parseDouble(getAttribute(attributes, 'cx', def: '0'));
     final double cy = parseDouble(getAttribute(attributes, 'cy', def: '0'));
     final double r = parseDouble(getAttribute(attributes, 'r', def: '0'));
     final Rect oval = Rect.fromCircle(center: Offset(cx, cy), radius: r);
-    return Path()..addOval(oval);
+    return CustomPath()..addOval(oval);
   }
 
-  static Path path(List<XmlEventAttribute> attributes) {
+  static CustomPath path(List<XmlEventAttribute> attributes) {
     final String d = getAttribute(attributes, 'd');
-    return parseSvgPathData(d);
+    return parseSvgPathData(d) as CustomPath;
   }
 
-  static Path rect(List<XmlEventAttribute> attributes) {
+  static CustomPath rect(List<XmlEventAttribute> attributes) {
     final double x = parseDouble(getAttribute(attributes, 'x', def: '0'));
     final double y = parseDouble(getAttribute(attributes, 'y', def: '0'));
     final double w = parseDouble(getAttribute(attributes, 'width', def: '0'));
@@ -627,21 +628,21 @@ class _Paths {
       final double rx = parseDouble(rxRaw);
       final double ry = parseDouble(ryRaw);
 
-      return Path()..addRRect(RRect.fromRectXY(rect, rx, ry));
+      return CustomPath()..addRRect(RRect.fromRectXY(rect, rx, ry));
     }
 
-    return Path()..addRect(rect);
+    return CustomPath()..addRect(rect);
   }
 
-  static Path polygon(List<XmlEventAttribute> attributes) {
+  static CustomPath polygon(List<XmlEventAttribute> attributes) {
     return parsePathFromPoints(attributes, true);
   }
 
-  static Path polyline(List<XmlEventAttribute> attributes) {
+  static CustomPath polyline(List<XmlEventAttribute> attributes) {
     return parsePathFromPoints(attributes, false);
   }
 
-  static Path parsePathFromPoints(
+  static CustomPath parsePathFromPoints(
       List<XmlEventAttribute> attributes, bool close) {
     final String points = getAttribute(attributes, 'points');
     if (points == '') {
@@ -649,26 +650,26 @@ class _Paths {
     }
     final String path = 'M$points${close ? 'z' : ''}';
 
-    return parseSvgPathData(path);
+    return parseSvgPathData(path) as CustomPath;
   }
 
-  static Path ellipse(List<XmlEventAttribute> attributes) {
+  static CustomPath ellipse(List<XmlEventAttribute> attributes) {
     final double cx = parseDouble(getAttribute(attributes, 'cx', def: '0'));
     final double cy = parseDouble(getAttribute(attributes, 'cy', def: '0'));
     final double rx = parseDouble(getAttribute(attributes, 'rx', def: '0'));
     final double ry = parseDouble(getAttribute(attributes, 'ry', def: '0'));
 
     final Rect r = Rect.fromLTWH(cx - rx, cy - ry, rx * 2, ry * 2);
-    return Path()..addOval(r);
+    return CustomPath()..addOval(r);
   }
 
-  static Path line(List<XmlEventAttribute> attributes) {
+  static CustomPath line(List<XmlEventAttribute> attributes) {
     final double x1 = parseDouble(getAttribute(attributes, 'x1', def: '0'));
     final double x2 = parseDouble(getAttribute(attributes, 'x2', def: '0'));
     final double y1 = parseDouble(getAttribute(attributes, 'y1', def: '0'));
     final double y2 = parseDouble(getAttribute(attributes, 'y2', def: '0'));
 
-    return Path()
+    return CustomPath()
       ..moveTo(x1, y1)
       ..lineTo(x2, y2);
   }
@@ -836,7 +837,7 @@ class SvgParserState {
 
     final DrawableParent parent = _parentDrawables.last.drawable;
     final DrawableStyle parentStyle = parent.style;
-    final Path path = pathFunc(attributes);
+    final CustomPath path = pathFunc(attributes);
     final DrawableStyleable drawable = DrawableShape(
       path,
       parseStyle(

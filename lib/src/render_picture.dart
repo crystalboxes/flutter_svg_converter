@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
 import 'picture_stream.dart';
+import 'ui_proxies/custom_canvas.dart';
 
 /// A widget that displays a [dart:ui.Picture] directly.
 @immutable

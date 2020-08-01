@@ -2,13 +2,17 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:flutter_svg_converter/src/ui_proxies/custom_canvas.dart';
+import 'package:flutter_svg_converter/src/ui_proxies/custom_shader.dart';
+import 'package:flutter_svg_converter/src/ui_proxies/string_representation.dart';
 import 'package:meta/meta.dart';
-import 'package:path_drawing/path_drawing.dart';
 import 'package:vector_math/vector_math_64.dart';
 
+import 'path_drawing/path_drawing.dart';
 import 'render_picture.dart' as render_picture;
 import 'svg/parsers.dart' show affineMatrix;
 import 'svg/xml_parsers.dart';
+import 'ui_proxies/custom_path.dart';
 
 /// Paint used in masks.
 final Paint _grayscaleDstInPaint = Paint()
@@ -30,7 +34,7 @@ abstract class Drawable {
   /// the `parentPaint` to optionally override the child's paint.
   ///
   /// The `bounds` specify the area to draw in.
-  void draw(Canvas canvas, Rect bounds);
+  void draw(CustomCanvas canvas, Rect bounds);
 }
 
 /// A [Drawable] that can have a [DrawableStyle] applied to it.
@@ -56,7 +60,7 @@ abstract class DrawableParent implements DrawableStyleable {
 
 /// Styling information for vector drawing.
 ///
-/// Contains [Paint], [Path], dashing, transform, and text styling information.
+/// Contains [Paint], [CustomPath], dashing, transform, and text styling information.
 @immutable
 class DrawableStyle {
   /// Creates a new [DrawableStyle].
@@ -101,7 +105,7 @@ class DrawableStyle {
   final PathFillType pathFillType;
 
   /// The clip to apply, if any.
-  final List<Path> clipPath;
+  final List<CustomPath> clipPath;
 
   /// The mask to apply, if any.
   final DrawableStyleable mask;
@@ -127,7 +131,7 @@ class DrawableStyle {
     DrawableTextStyle textStyle,
     PathFillType pathFillType,
     double groupOpacity,
-    List<Path> clipPath,
+    List<CustomPath> clipPath,
     DrawableStyleable mask,
     BlendMode blendMode,
   }) {
@@ -507,7 +511,7 @@ class DrawableText implements Drawable {
       (fill?.width ?? 0.0) + (stroke?.width ?? 0.0) > 0.0;
 
   @override
-  void draw(Canvas canvas, Rect bounds) {
+  void draw(CustomCanvas canvas, Rect bounds) {
     if (!hasDrawableContent) {
       return;
     }
@@ -565,7 +569,7 @@ class DrawableText implements Drawable {
 /// Contains reusable drawing elements that can be referenced by a String ID.
 class DrawableDefinitionServer {
   final Map<String, DrawableGradient> _gradients = <String, DrawableGradient>{};
-  final Map<String, List<Path>> _clipPaths = <String, List<Path>>{};
+  final Map<String, List<CustomPath>> _clipPaths = <String, List<CustomPath>>{};
   final Map<String, DrawableStyleable> _drawables =
       <String, DrawableStyleable>{};
 
@@ -611,14 +615,14 @@ class DrawableDefinitionServer {
     _gradients[id] = gradient;
   }
 
-  /// Get a [List<Path>] of clip paths by [id].
-  List<Path> getClipPath(String id) {
+  /// Get a [List<CustomPath>] of clip paths by [id].
+  List<CustomPath> getClipPath(String id) {
     assert(id != null);
     return _clipPaths[id];
   }
 
-  /// Add a [List<Path>] of clip paths by [id].
-  void addClipPath(String id, List<Path> paths) {
+  /// Add a [List<CustomPath>] of clip paths by [id].
+  void addClipPath(String id, List<CustomPath> paths) {
     assert(id != null);
     assert(paths != null);
     _clipPaths[id] = paths;
@@ -725,13 +729,24 @@ class DrawableLinearGradient extends DrawableGradient {
       ),
     );
 
-    return Gradient.linear(
+    var shader = Gradient.linear(
       Offset(v3from.x, v3from.y),
       Offset(v3to.x, v3to.y),
       colors,
       offsets,
       spreadMethod,
     );
+
+    shaderMap[shader] = '''
+      Gradient.linear(
+        ${stringRepresentationOf(Offset(v3from.x, v3from.y))},
+        ${stringRepresentationOf(Offset(v3to.x, v3to.y))},
+        ${stringRepresentationOf(colors)},
+        ${stringRepresentationOf(offsets)},
+        ${stringRepresentationOf(spreadMethod)},
+      )
+    ''';
+    return shader;
   }
 }
 
@@ -786,7 +801,7 @@ class DrawableRadialGradient extends DrawableGradient {
       m4transform = translate.multiplied(scale)..multiply(m4transform);
     }
 
-    return Gradient.radial(
+    final shader = Gradient.radial(
       center,
       radius,
       colors,
@@ -796,6 +811,20 @@ class DrawableRadialGradient extends DrawableGradient {
       focal,
       0.0,
     );
+    shaderMap[shader] = '''
+      Gradient.radial(
+      ${stringRepresentationOf(center)},
+      ${stringRepresentationOf(radius)},
+      ${stringRepresentationOf(colors)},
+      ${stringRepresentationOf(offsets)},
+      ${stringRepresentationOf(spreadMethod)},
+      ${stringRepresentationOf(m4transform.storage)},
+      ${stringRepresentationOf(focal)},
+      ${stringRepresentationOf(0.0)},
+    )
+    ''';
+
+    return shader;
   }
 }
 
@@ -872,7 +901,7 @@ class DrawableRoot implements DrawableParent {
   /// If the `viewBox` dimensions are not 1:1 with `desiredSize`, will scale to
   /// the smaller dimension and translate to center the image along the larger
   /// dimension.
-  void scaleCanvasToViewBox(Canvas canvas, Size desiredSize) {
+  void scaleCanvasToViewBox(CustomCanvas canvas, Size desiredSize) {
     render_picture.scaleCanvasToViewBox(
       canvas,
       desiredSize,
@@ -882,7 +911,7 @@ class DrawableRoot implements DrawableParent {
   }
 
   /// Clips the canvas to a rect corresponding to the `viewBox`.
-  void clipCanvasToViewBox(Canvas canvas) {
+  void clipCanvasToViewBox(CustomCanvas canvas) {
     canvas.clipRect(viewport.viewBoxRect);
   }
 
@@ -893,7 +922,7 @@ class DrawableRoot implements DrawableParent {
       !viewport.viewBox.isEmpty;
 
   @override
-  void draw(Canvas canvas, Rect bounds) {
+  void draw(CustomCanvas canvas, Rect bounds) {
     if (!hasDrawableContent) {
       return;
     }
@@ -932,8 +961,8 @@ class DrawableRoot implements DrawableParent {
       return null;
     }
 
-    final PictureRecorder recorder = PictureRecorder();
-    final Canvas canvas = Canvas(recorder, viewport.viewBoxRect);
+    final CustomPictureRecorder recorder = CustomPictureRecorder();
+    final CustomCanvas canvas = CustomCanvas(recorder, viewport.viewBoxRect);
     if (colorFilter != null) {
       canvas.saveLayer(null, Paint()..colorFilter = colorFilter);
     } else {
@@ -948,6 +977,7 @@ class DrawableRoot implements DrawableParent {
 
     draw(canvas, viewport.viewBoxRect);
     canvas.restore();
+    print('Make recording...');
     return recorder.endRecording();
   }
 
@@ -1001,7 +1031,7 @@ class DrawableGroup implements DrawableStyleable, DrawableParent {
   bool get hasDrawableContent => children != null && children.isNotEmpty;
 
   @override
-  void draw(Canvas canvas, Rect bounds) {
+  void draw(CustomCanvas canvas, Rect bounds) {
     if (!hasDrawableContent) {
       return;
     }
@@ -1048,7 +1078,7 @@ class DrawableGroup implements DrawableStyleable, DrawableParent {
     };
 
     if (style?.clipPath?.isNotEmpty == true) {
-      for (Path clipPath in style.clipPath) {
+      for (CustomPath clipPath in style.clipPath) {
         canvas.save();
         canvas.clipPath(clipPath);
         if (children.length > 1) {
@@ -1125,7 +1155,7 @@ class DrawableRasterImage implements DrawableStyleable {
   final DrawableStyle style;
 
   @override
-  void draw(Canvas canvas, Rect bounds) {
+  void draw(CustomCanvas canvas, Rect bounds) {
     final Size imageSize = Size(
       image.width.toDouble(),
       image.height.toDouble(),
@@ -1198,8 +1228,8 @@ class DrawableShape implements DrawableStyleable {
   @override
   final DrawableStyle style;
 
-  /// The [Path] describing this shape.
-  final Path path;
+  /// The [CustomPath] describing this shape.
+  final CustomPath path;
 
   /// The bounds of this shape.
   Rect get bounds => path.getBounds();
@@ -1212,7 +1242,7 @@ class DrawableShape implements DrawableStyleable {
   bool get hasDrawableContent => bounds.width + bounds.height > 0;
 
   @override
-  void draw(Canvas canvas, Rect bounds) {
+  void draw(CustomCanvas canvas, Rect bounds) {
     if (!hasDrawableContent || style == null) {
       return;
     }
@@ -1267,7 +1297,7 @@ class DrawableShape implements DrawableStyleable {
     };
 
     if (style.clipPath?.isNotEmpty == true) {
-      for (Path clip in style.clipPath) {
+      for (CustomPath clip in style.clipPath) {
         canvas.save();
         canvas.clipPath(clip);
         innerDraw();

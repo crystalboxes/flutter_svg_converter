@@ -562,7 +562,7 @@ class FilePicture extends PictureProvider<FilePicture> {
   PictureStreamCompleter load(FilePicture key, {PictureErrorListener onError}) {
     return OneFramePictureStreamCompleter(_loadAsync(key, onError: onError),
         informationCollector: () sync* {
-      yield DiagnosticsProperty<String>('Path', file?.path);
+      yield DiagnosticsProperty<String>('CustomPath', file?.path);
     });
   }
 

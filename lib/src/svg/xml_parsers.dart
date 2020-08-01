@@ -1,6 +1,7 @@
 import 'dart:ui';
 
-import 'package:path_drawing/path_drawing.dart';
+import '../ui_proxies/custom_path.dart';
+import '../path_drawing/path_drawing.dart';
 import 'package:vector_math/vector_math_64.dart';
 import 'package:xml/xml_events.dart';
 
@@ -300,19 +301,20 @@ PathFillType parseFillRule(List<XmlEventAttribute> attributes,
 }
 
 /// Applies a transform to a path if the [attributes] contain a `transform`.
-Path applyTransformIfNeeded(Path path, List<XmlEventAttribute> attributes) {
+CustomPath applyTransformIfNeeded(
+    CustomPath path, List<XmlEventAttribute> attributes) {
   final Matrix4 transform =
       parseTransform(getAttribute(attributes, 'transform', def: null));
 
   if (transform != null) {
-    return path.transform(transform.storage);
+    return path.transform(transform.storage) as CustomPath;
   } else {
     return path;
   }
 }
 
-/// Parses a `clipPath` element into a list of [Path]s.
-List<Path> parseClipPath(
+/// Parses a `clipPath` element into a list of [CustomPath]s.
+List<CustomPath> parseClipPath(
   List<XmlEventAttribute> attributes,
   DrawableDefinitionServer definitions,
 ) {

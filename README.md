@@ -73,7 +73,7 @@ final Widget networkSvg = SvgPicture.network(
 If you'd like to render the SVG to some other canvas, you can do something like:
 
 ```dart
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg_converter/flutter_svg.dart';
 final String rawSvg = '''<svg viewBox="...">...</svg>''';
 final DrawableRoot svgRoot = await svg.fromSvgString(rawSvg, rawSvg);
 
