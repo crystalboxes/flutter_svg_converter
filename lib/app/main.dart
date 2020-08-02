@@ -1,70 +1,111 @@
-/// ignore_for_file: public_member_api_docs
+import 'dart:math';
+import 'dart:ui';
+
+import 'package:dart_style/dart_style.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_svg_converter/flutter_svg.dart';
+
+import '../flutter_svg.dart';
+import 'get_tiger.dart';
+import 'new_ui.dart';
+
+void main() {
+  runApp(Ui2());
+}
+
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class SvgPainter extends CustomPainter {
+  final CustomPicture pic;
+
+  SvgPainter(@required this.pic);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (pic != null) {
+      if (pic.hasBounds) {
+        canvas.scale(min(size.width / pic.clipRect.width,
+            size.height / pic.clipRect.height));
+      }
+      for (var cmd in pic.commands) {
+        if (cmd.callback != null) {
+          cmd.callback(canvas);
+        }
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+class _MyAppState extends State<MyApp> {
+  String source = '';
+  final formatter = new DartFormatter();
+  TextEditingController _controller;
+
+  String status = '';
+
+  CustomPicture pic;
+
+  Future<List<dynamic>> makePic(String svgSrc) async {
+    final DrawableRoot svgRoot = await svg.fromSvgString(svgSrc, svgSrc);
+    final Picture picture = svgRoot.toPicture();
+    String source = (picture as CustomPicture).makeCustomPainterSource();
+    final className = 'SvgImage';
+    source = '''
+import 'dart:math';
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter_svg_converter/avd.dart';
-import 'package:flutter_svg_converter/flutter_svg.dart';
 
-/// Assets that will be rendered.
-const List<String> assetNames = <String>[
-  // 'assets/notfound.svg', // uncomment to test an asset that doesn't exist.
-  'assets/flutter_logo.svg',
-  'assets/dart.svg',
-  'assets/simple/clip_path_3.svg',
-  'assets/simple/clip_path_2.svg',
-  'assets/simple/clip_path.svg',
-  'assets/simple/fill-rule-inherit.svg',
-  'assets/simple/group_fill_opacity.svg',
-  'assets/simple/group_opacity.svg',
-  'assets/simple/text.svg',
-  'assets/simple/text_2.svg',
-  'assets/simple/linear_gradient.svg',
-  'assets/simple/linear_gradient_2.svg',
-  'assets/simple/male.svg',
-  'assets/simple/radial_gradient.svg',
-  'assets/simple/rect_rrect.svg',
-  'assets/simple/rect_rrect_no_ry.svg',
-  'assets/simple/style_attr.svg',
-  'assets/w3samples/aa.svg',
-  'assets/w3samples/alphachannel.svg',
-  'assets/simple/ellipse.svg',
-  'assets/simple/dash_path.svg',
-  'assets/simple/nested_group.svg',
-  'assets/simple/stroke_inherit_circles.svg',
-  'assets/simple/use_circles.svg',
-  'assets/simple/use_opacity_grid.svg',
-  'assets/wikimedia/chess_knight.svg',
-  'assets/wikimedia/Ghostscript_Tiger.svg',
-  'assets/wikimedia/Firefox_Logo_2017.svg',
-];
+class $className extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+   $source
+  }
 
-/// Assets treated as "icons" - using a color filter to render differently.
-const List<String> iconNames = <String>[
-  'assets/deborah_ufw/new-action-expander.svg',
-  'assets/deborah_ufw/new-camera.svg',
-  'assets/deborah_ufw/new-gif-button.svg',
-  'assets/deborah_ufw/new-gif.svg',
-  'assets/deborah_ufw/new-image.svg',
-  'assets/deborah_ufw/new-mention.svg',
-  'assets/deborah_ufw/new-pause-button.svg',
-  'assets/deborah_ufw/new-play-button.svg',
-  'assets/deborah_ufw/new-send-circle.svg',
-  'assets/deborah_ufw/numeric_25.svg',
-];
-
-/// Assets to test network access.
-const List<String> uriNames = <String>[
-  'http://upload.wikimedia.org/wikipedia/commons/0/02/SVG_logo.svg',
-  'https://dev.w3.org/SVG/tools/svgweb/samples/svg-files/410.svg',
-  'https://upload.wikimedia.org/wikipedia/commons/b/b4/Chess_ndd45.svg',
-];
-
-void main() {
-  runApp(MyApp());
+  @override
+  bool shouldRepaint($className oldDelegate) => false;
 }
+        ''';
 
-class MyApp extends StatelessWidget {
+    return <dynamic>[
+      (picture as CustomPicture)..findBounds(),
+      source,
+    ];
+  }
+
+  Future<String> getFormattedOutput(String src) async {
+    return formatter.format(src);
+  }
+
+  void refresh() {
+    makePic(getTiger()).then((value) {
+      setState(() {
+        status = '';
+        pic = value[0] as CustomPicture;
+        source = value[1] as String;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    _controller = TextEditingController(text: 'Initial value');
+    refresh();
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -72,92 +113,38 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter SVG Demo'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  final List<Widget> _painters = <Widget>[];
-  double _dimension;
-
-  @override
-  void initState() {
-    super.initState();
-    _dimension = 203.0;
-    for (String assetName in assetNames) {
-      _painters.add(
-        SvgPicture.asset(assetName),
-      );
-    }
-
-    for (int i = 0; i < iconNames.length; i++) {
-      _painters.add(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: SvgPicture.asset(
-            iconNames[i],
-            color: Colors.blueGrey[(i + 1) * 100],
-            matchTextDirection: true,
+      home: Scaffold(
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  FlatButton(
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: source));
+                    },
+                    child: Text(status == '' ? 'Copy to clipboard12' : status),
+                  ),
+                  FlatButton(
+                    child: Text('refresh'),
+                    onPressed: refresh,
+                  )
+                ],
+              ),
+              Text(
+                source.length > 500
+                    ? source.substring(0, 500) + '\n...'
+                    : source,
+                style: TextStyle(fontFamily: 'monospace'),
+              ),
+              CustomPaint(
+                size: Size(500, 500),
+                painter: SvgPainter(pic),
+              )
+            ],
           ),
         ),
-      );
-    }
-
-    for (String uriName in uriNames) {
-      _painters.add(
-        SvgPicture.network(
-          uriName,
-          placeholderBuilder: (BuildContext context) => Container(
-              padding: const EdgeInsets.all(30.0),
-              child: const CircularProgressIndicator()),
-        ),
-      );
-    }
-    // Shows an example of an SVG image that will fetch a raster image from a URL.
-    _painters.add(SvgPicture.string('''<svg viewBox="0 0 200 200"
-  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <image xlink:href="https://mdn.mozillademos.org/files/6457/mdn_logo_only_color.png" height="200" width="200"/>
-</svg>'''));
-    _painters.add(AvdPicture.asset('assets/android_vd/battery_charging.xml'));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_dimension > MediaQuery.of(context).size.width - 10.0) {
-      _dimension = MediaQuery.of(context).size.width - 10.0;
-    }
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
       ),
-      body: Column(children: <Widget>[
-        Slider(
-            min: 5.0,
-            max: MediaQuery.of(context).size.width - 10.0,
-            value: _dimension,
-            onChanged: (double val) {
-              setState(() => _dimension = val);
-            }),
-        Expanded(
-          child: GridView.extent(
-            shrinkWrap: true,
-            maxCrossAxisExtent: _dimension,
-            padding: const EdgeInsets.all(4.0),
-            mainAxisSpacing: 4.0,
-            crossAxisSpacing: 4.0,
-            children: _painters.toList(),
-          ),
-        ),
-      ]),
     );
   }
 }
