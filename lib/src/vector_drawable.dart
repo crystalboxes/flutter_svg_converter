@@ -977,7 +977,6 @@ class DrawableRoot implements DrawableParent {
 
     draw(canvas, viewport.viewBoxRect);
     canvas.restore();
-    print('Make recording...');
     return recorder.endRecording();
   }
 

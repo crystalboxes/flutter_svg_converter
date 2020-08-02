@@ -164,6 +164,22 @@ String stringRepresentationOf(dynamic object) {
     case Paint:
       return paintToString(object as Paint);
 
+    case TileMode:
+      switch (object as TileMode) {
+        case TileMode.clamp:
+          return 'TileMode.clamp';
+        case TileMode.repeated:
+          return 'TileMode.repeated';
+        case TileMode.mirror:
+          return 'TileMode.mirror';
+      }
+      return '';
+
+    case Offset:
+      var offset = object as Offset;
+      var dx = stringRepresentationOf(offset.dx);
+      var dy = stringRepresentationOf(offset.dy);
+      return 'Offset(${dx}, ${dy})';
     case CustomPicture:
       var pic = object as CustomPicture;
       var commands = joinCommands('canvas', pic.commands);
@@ -184,9 +200,22 @@ String stringRepresentationOf(dynamic object) {
         return o;
       } else if (object.runtimeType.toString() == 'SurfacePaint') {
         return paintToString(object as Paint);
+      } else if (object.runtimeType.toString() == 'EngineParagraph' ||
+          object.runtimeType.toString() == 'Paragraph') {
+        return '''
+        () {
+          var pb = ParagraphBuilder(ParagraphStyle())..addText('Unimplemented');
+          return pb.build();
+        }()
+        ''';
+      } else if (object.runtimeType.toString() == 'List<Color>') {
+        var l = object as List<Color>;
+        return '<Color>[${l.fold<String>('', (value, element) => '$value' + stringRepresentationOf(element) + ', ')}]';
+      } else if (object.runtimeType.toString().startsWith('List<')) {
+        var l = object as List<dynamic>;
+        return '[${l.fold<String>('', (value, element) => '$value' + stringRepresentationOf(element) + ', ')}]';
       } else {
-        print('couldnt find ${object.runtimeType}');
-        return '';
+        throw ('couldnt find ${object.runtimeType}');
       }
   }
 }

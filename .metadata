@@ -6,3 +6,5 @@
 version:
   revision: 48bb5b7926452e2b138000c3d06a075273efbd90
   channel: master
+
+project_type: app

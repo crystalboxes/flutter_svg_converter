@@ -18,3 +18,7 @@ coverage/
 test/failures
 # Flutter crash logs
 /flutter_*.log
+
+android
+ios
+test

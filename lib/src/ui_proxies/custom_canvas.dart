@@ -357,19 +357,23 @@ class CustomCanvas implements Canvas {
 
   @override
   void drawParagraph(Paragraph paragraph, Offset offset) {
-    _commands.add(
-      Command(
-        name: 'drawParagraph',
-        args: <dynamic>[
-          paragraph,
-          offset,
-        ],
-        optional: [],
-        callback: (Canvas canvas) {
-          canvas.drawParagraph(paragraph, offset);
-        },
-      ),
-    );
+    // TODO fix paragraphs
+    // ignore: dead_code
+    if (false) {
+      _commands.add(
+        Command(
+          name: 'drawParagraph',
+          args: <dynamic>[
+            paragraph,
+            offset,
+          ],
+          optional: [],
+          callback: (Canvas canvas) {
+            canvas.drawParagraph(paragraph, offset);
+          },
+        ),
+      );
+    }
     a.drawParagraph(paragraph, offset);
   }
 
