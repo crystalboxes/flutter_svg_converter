@@ -17,12 +17,12 @@ class CustomPicture implements Picture {
   String makeCustomPainterSource() {
     // get first clipRect
     if (!hasBounds) {
-      findBounds();
+      calculateBounds();
     }
     return stringRepresentationOf(this);
   }
 
-  void findBounds() {
+  void calculateBounds() {
     for (var cmd in commands) {
       if (cmd.name == 'clipRect') {
         var r = cmd.args[0] as Rect;

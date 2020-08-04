@@ -1,13 +1,14 @@
 import 'package:dart_style/dart_style.dart';
 import 'package:tuple/tuple.dart';
 
-import '../flutter_svg.dart';
+import '../../flutter_svg.dart';
 
 String makeCustomPainterClassSource(String paintBody,
         [String className = 'SvgImage']) =>
     '''import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 

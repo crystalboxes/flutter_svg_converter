@@ -184,10 +184,23 @@ String stringRepresentationOf(dynamic object) {
       var pic = object as CustomPicture;
       var commands = joinCommands('canvas', pic.commands);
       if (pic.hasBounds) {
-        return 'canvas.scale(min(size.width / ${pic.clipRect.width}, size.height / ${pic.clipRect.width}));\n' +
+        return 'canvas.scale(min(size.width / ${pic.clipRect.width}, size.height / ${pic.clipRect.height}));\n' +
             commands;
       }
       return commands;
+
+    case RRect:
+      var rrect = object as RRect;
+      return '''RRect.fromLTRBAndCorners(
+        ${rrect.left},
+        ${rrect.top},
+        ${rrect.right},
+        ${rrect.bottom},
+        topLeft: Radius.elliptical(${rrect.tlRadiusX}, ${rrect.tlRadiusY}),
+        topRight: Radius.elliptical(${rrect.trRadiusX}, ${rrect.trRadiusY}),
+        bottomRight: Radius.elliptical(${rrect.blRadiusX}, ${rrect.blRadiusY}),
+        bottomLeft: Radius.elliptical(${rrect.brRadiusX}, ${rrect.brRadiusY}),
+      )''';
 
     default:
       if (object.runtimeType.toString() == 'Float64List') {

@@ -738,7 +738,7 @@ class DrawableLinearGradient extends DrawableGradient {
     );
 
     shaderMap[shader] = '''
-      Gradient.linear(
+      ui.Gradient.linear(
         ${stringRepresentationOf(Offset(v3from.x, v3from.y))},
         ${stringRepresentationOf(Offset(v3to.x, v3to.y))},
         ${stringRepresentationOf(colors)},
@@ -812,7 +812,7 @@ class DrawableRadialGradient extends DrawableGradient {
       0.0,
     );
     shaderMap[shader] = '''
-      Gradient.radial(
+      ui.Gradient.radial(
       ${stringRepresentationOf(center)},
       ${stringRepresentationOf(radius)},
       ${stringRepresentationOf(colors)},
