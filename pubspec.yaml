@@ -31,3 +31,5 @@ environment:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/fsvg.jpg
