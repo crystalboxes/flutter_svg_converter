@@ -1,10 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg_converter/app/custom_picture_view.dart';
+import 'package:flutter_svg_converter/app/helper_widgets/custom_picture_view.dart';
 import 'package:flutter_svg_converter/app/util/conversion.dart';
 import 'dart:ui' as ui;
-import '../flutter_svg.dart';
+import '../../flutter_svg.dart';
 
 class ImagePainter extends CustomPainter {
   final ui.Image image;
@@ -22,6 +22,8 @@ class ImagePainter extends CustomPainter {
     return false;
   }
 }
+
+final globalCache = <String, CustomPicture>{};
 
 class SVGWidget extends StatefulWidget {
   final String source;
@@ -41,11 +43,18 @@ class _SVGWidgetState extends State<SVGWidget> {
 
   @override
   void initState() {
-    parseSvgSource(widget.source).then((value) {
+    if (globalCache.containsKey(widget.source)) {
       setState(() {
-        _customPicture = value.item1;
+        _customPicture = globalCache[widget.source];
       });
-    });
+    } else {
+      parseSvgSource(widget.source).then((value) {
+        setState(() {
+          _customPicture = value.item1;
+          globalCache[widget.source] = value.item1;
+        });
+      });
+    }
     super.initState();
   }
 

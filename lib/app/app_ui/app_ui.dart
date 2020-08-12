@@ -8,14 +8,17 @@ import 'result_view.dart';
 import 'state.dart';
 
 class SVGToolAppUI extends StatelessWidget {
+  final bool showsCodeOnInit;
   const SVGToolAppUI({
     Key key,
+    this.showsCodeOnInit = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => SVGToolState.initializeWith(getTiger()),
+      create: (context) => SVGToolState.initializeWith(getTiger())
+        ..setIsViewingImage(!showsCodeOnInit),
       builder: (context, child) {
         return Container(
           child: Row(

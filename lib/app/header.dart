@@ -1,33 +1,47 @@
 import 'package:flutter/material.dart';
 
-import 'constants.dart';
+import 'util/constants.dart';
 import 'assets/icons.dart';
 
 class Logo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          margin: EdgeInsets.only(right: 8),
-          child: CustomPaint(
-            size: FlutterIcon.size,
-            painter: FlutterIcon(),
+    return InkWell(
+      onTap: () {
+        final newRouteName = '/';
+        bool isNewRouteSameAsCurrent = false;
+
+        Navigator.popUntil(context, ModalRoute.withName('/'));
+
+        if (!isNewRouteSameAsCurrent) {
+          Navigator.of(context).pushNamed(newRouteName);
+        }
+      },
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            margin: EdgeInsets.only(right: 8),
+            child: CustomPaint(
+              size: FlutterIcon.size,
+              painter: FlutterIcon(),
+            ),
           ),
-        ),
-        RichText(
-          text: TextSpan(children: [
-            TextSpan(
-              text: 'SVG Tool',
-              style: Theme.of(context)
-                  .textTheme
-                  .headline4
-                  .apply(color: Theme.of(context).secondaryHeaderColor),
-            )
-          ]),
-        ),
-      ],
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: 'SVG Tool',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline4
+                      .apply(color: Theme.of(context).secondaryHeaderColor),
+                )
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

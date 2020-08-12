@@ -14,12 +14,12 @@ class SVGToolState with ChangeNotifier {
 
   String error;
 
-  bool isViewingImage = false;
+  bool isViewingImage = true;
 
   _transformSource(String input) {
     parseSvgSource(input).then((value) {
       setPicture(value.item1);
-      setGeneratedSource(makeCustomPainterClassSource(value.item2));
+      setGeneratedSource(value.item2);
     }).catchError((error) => setError(error));
   }
 

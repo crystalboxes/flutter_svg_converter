@@ -36,41 +36,42 @@ String paintToString(Paint paint) {
   var p2 = '''Paint()''';
 
   if (false || defaultPaint.blendMode != paint.blendMode) {
-    p2 += '..blendMode = ${stringRepresentationOf(paint.blendMode)}';
+    p2 += '\n  ..blendMode = ${stringRepresentationOf(paint.blendMode)}';
   }
   if (true || defaultPaint.color != paint.color) {
-    p2 += '..color = ${stringRepresentationOf(paint.color)}';
+    p2 += '\n  ..color = ${stringRepresentationOf(paint.color)}';
   }
 
   if (false || defaultPaint.colorFilter != paint.colorFilter) {
-    p2 += '..colorFilter = ${stringRepresentationOf(paint.colorFilter)}';
+    p2 += '\n  ..colorFilter = ${stringRepresentationOf(paint.colorFilter)}';
   }
   if (false || defaultPaint.filterQuality != paint.filterQuality) {
-    p2 += '..filterQuality = ${stringRepresentationOf(paint.filterQuality)}';
+    p2 +=
+        '\n  ..filterQuality = ${stringRepresentationOf(paint.filterQuality)}';
   }
   if (false || defaultPaint.imageFilter != paint.imageFilter) {
-    p2 += '..imageFilter = ${stringRepresentationOf(paint.imageFilter)}';
+    p2 += '\n  ..imageFilter = ${stringRepresentationOf(paint.imageFilter)}';
   }
   if (false || defaultPaint.invertColors != paint.invertColors) {
-    p2 += '..invertColors = ${stringRepresentationOf(paint.invertColors)}';
+    p2 += '\n  ..invertColors = ${stringRepresentationOf(paint.invertColors)}';
   }
   if (false || defaultPaint.isAntiAlias != paint.isAntiAlias) {
-    p2 += '..isAntiAlias = ${stringRepresentationOf(paint.isAntiAlias)}';
+    p2 += '\n  ..isAntiAlias = ${stringRepresentationOf(paint.isAntiAlias)}';
   }
   if (false || defaultPaint.maskFilter != paint.maskFilter) {
-    p2 += '..maskFilter = ${stringRepresentationOf(paint.maskFilter)}';
+    p2 += '\n  ..maskFilter = ${stringRepresentationOf(paint.maskFilter)}';
   }
   if (false || defaultPaint.strokeCap != paint.strokeCap) {
-    p2 += '..strokeCap = ${stringRepresentationOf(paint.strokeCap)}';
+    p2 += '\n  ..strokeCap = ${stringRepresentationOf(paint.strokeCap)}';
   }
   if (false || defaultPaint.strokeJoin != paint.strokeJoin) {
-    p2 += '..strokeJoin = ${stringRepresentationOf(paint.strokeJoin)}';
+    p2 += '\n  ..strokeJoin = ${stringRepresentationOf(paint.strokeJoin)}';
   }
   if (false || defaultPaint.strokeWidth != paint.strokeWidth) {
-    p2 += '..strokeWidth = ${stringRepresentationOf(paint.strokeWidth)}';
+    p2 += '\n  ..strokeWidth = ${stringRepresentationOf(paint.strokeWidth)}';
   }
   if (false || defaultPaint.style != paint.style) {
-    p2 += '..style = ${stringRepresentationOf(paint.style)}';
+    p2 += '\n  ..style = ${stringRepresentationOf(paint.style)}';
   }
   try {
     p2 +=
@@ -85,6 +86,8 @@ String paintToString(Paint paint) {
 
 String stringRepresentationOf(dynamic object) {
   switch (object.runtimeType as Type) {
+    case String:
+      return object;
     case CustomPath:
       String out = '(){\n';
       out += 'var path = Path();\n';
@@ -192,15 +195,15 @@ String stringRepresentationOf(dynamic object) {
     case RRect:
       var rrect = object as RRect;
       return '''RRect.fromLTRBAndCorners(
-        ${rrect.left},
-        ${rrect.top},
-        ${rrect.right},
-        ${rrect.bottom},
-        topLeft: Radius.elliptical(${rrect.tlRadiusX}, ${rrect.tlRadiusY}),
-        topRight: Radius.elliptical(${rrect.trRadiusX}, ${rrect.trRadiusY}),
-        bottomRight: Radius.elliptical(${rrect.blRadiusX}, ${rrect.blRadiusY}),
-        bottomLeft: Radius.elliptical(${rrect.brRadiusX}, ${rrect.brRadiusY}),
-      )''';
+  ${rrect.left},
+  ${rrect.top},
+  ${rrect.right},
+  ${rrect.bottom},
+  topLeft: Radius.elliptical(${rrect.tlRadiusX}, ${rrect.tlRadiusY}),
+  topRight: Radius.elliptical(${rrect.trRadiusX}, ${rrect.trRadiusY}),
+  bottomRight: Radius.elliptical(${rrect.blRadiusX}, ${rrect.blRadiusY}),
+  bottomLeft: Radius.elliptical(${rrect.brRadiusX}, ${rrect.brRadiusY}),
+)''';
 
     default:
       if (object.runtimeType.toString() == 'Float64List') {
@@ -215,12 +218,10 @@ String stringRepresentationOf(dynamic object) {
         return paintToString(object as Paint);
       } else if (object.runtimeType.toString() == 'EngineParagraph' ||
           object.runtimeType.toString() == 'Paragraph') {
-        return '''
-        () {
-          var pb = ParagraphBuilder(ParagraphStyle())..addText('Unimplemented');
-          return pb.build();
-        }()
-        ''';
+        return '''() {
+  var pb = ParagraphBuilder(ParagraphStyle())..addText('Unimplemented');
+  return pb.build();
+}()''';
       } else if (object.runtimeType.toString() == 'List<Color>') {
         var l = object as List<Color>;
         return '<Color>[${l.fold<String>('', (value, element) => '$value' + stringRepresentationOf(element) + ', ')}]';

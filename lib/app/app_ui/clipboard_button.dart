@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../assets/icons.dart';
-import '../illustration_paint.dart';
+import '../helper_widgets/illustration_paint.dart';
 import 'app_controls.dart';
 
 const actionButtonMargin = 15.0;

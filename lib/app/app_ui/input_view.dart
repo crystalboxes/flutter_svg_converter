@@ -66,8 +66,11 @@ class DecoratedTextFormField extends StatelessWidget {
             disabledBorder: InputBorder.none,
             contentPadding: EdgeInsets.all(0),
           ),
-          style:
-              TextStyle(fontFamily: 'monospace', fontSize: 11, height: 13 / 11),
+          style: TextStyle(
+              color: Colors.black87,
+              fontFamily: 'monospace',
+              fontSize: 11,
+              height: 13 / 11),
           maxLines: null,
           keyboardType: TextInputType.multiline,
           onChanged: onChanged,

@@ -8,6 +8,7 @@ import 'custom_path.dart';
 class CustomPicture implements Picture {
   final Picture _picture;
   final CustomCanvas _canvas;
+  final colors = <Color>[];
 
   List<Command> get commands => _canvas._commands;
   Size clipRect = Size(0, 0);

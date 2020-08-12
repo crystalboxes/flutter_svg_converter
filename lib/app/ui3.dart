@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'assets/big_illustration.dart';
-import 'constants.dart';
-import 'illustration_paint.dart';
-import 'svg_widget.dart';
+import 'title_screen.dart';
+import 'util/constants.dart';
+import 'helper_widgets/illustration_paint.dart';
+import 'router.dart';
+import 'helper_widgets/svg_widget.dart';
 
 import 'header.dart';
 import 'app_ui/app_ui.dart';
@@ -16,36 +18,21 @@ class SVGToolApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: customLightTheme,
-      home: Scaffold(
-        backgroundColor: Colors.white,
-        body: SVGToolLayout(),
-      ),
+      onGenerateRoute: onGenerateRoute,
     );
   }
 }
 
-class TitleText extends StatelessWidget {
+class SVGToolMainPage extends StatelessWidget {
+  final Widget body;
+
+  const SVGToolMainPage({Key key, this.body}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          Text(
-            'Flutter SVG Tool',
-            style: Theme.of(context).textTheme.headline1,
-          ),
-          Container(
-            margin: EdgeInsets.only(top: 7),
-            child: Text(
-              'Transform your SVG into Dart code',
-              style: Theme.of(context)
-                  .textTheme
-                  .headline2
-                  .apply(color: Theme.of(context).secondaryHeaderColor),
-            ),
-          ),
-        ],
-      ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: body == null ? SVGToolLayout() : body,
     );
   }
 }
@@ -94,8 +81,32 @@ class ColumnSection extends StatelessWidget {
 }
 
 class SVGToolLayout extends StatelessWidget {
+  final bool isMinimal;
+
+  const SVGToolLayout({Key key, this.isMinimal = false}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    var bodyWidgets = [
+      Container(
+        height: 50,
+      )
+    ];
+    if (!isMinimal) {
+      bodyWidgets = [
+        Container(
+          margin: EdgeInsets.only(bottom: 150),
+          child: TitleScreen(),
+        ),
+        Container(
+          margin: EdgeInsets.only(bottom: 150),
+          constraints: BoxConstraints(maxWidth: layoutMaxWidth),
+          child: AboutColumns(),
+        ),
+        Container(
+          height: 110,
+        ),
+      ];
+    }
     return Column(
       children: [
         SVGToolAppbar(),
@@ -103,24 +114,19 @@ class SVGToolLayout extends StatelessWidget {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                Container(
-                  margin: EdgeInsets.only(bottom: 150),
-                  child: TitleScreen(),
-                ),
-                Container(
-                  margin: EdgeInsets.only(bottom: 150),
-                  constraints: BoxConstraints(maxWidth: layoutMaxWidth),
-                  child: AboutColumns(),
-                ),
-                Container(
-                  height: 110,
-                ),
+                ...bodyWidgets,
                 Container(
                   margin: EdgeInsets.only(bottom: 150),
                   constraints:
                       BoxConstraints(maxWidth: layoutMaxWidth, minHeight: 600),
-                  child: SVGToolAppUI(),
+                  child: SVGToolAppUI(
+                    showsCodeOnInit: isMinimal,
+                  ),
                 ),
+                if (isMinimal)
+                  Container(
+                    height: 200,
+                  ),
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Row(
@@ -188,59 +194,6 @@ class AboutColumns extends StatelessWidget {
                 'SVG Tool extracts colors and additional properties into variables, which makes it simple to make quick changes to get the illustration or the icon fit into the look of your app.',
           ),
         ),
-      ],
-    );
-  }
-}
-
-class TitleScreen extends StatelessWidget {
-  const TitleScreen({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          margin: EdgeInsets.only(top: 100),
-          child: Stack(
-            children: [
-              Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(top: 8),
-                        child: SVGWidget(
-                          rasterize: true,
-                          size: Size(440, 440),
-                          source: bigIllustrationSvg,
-                        ),
-                      )
-                    ],
-                  )
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Container(
-                      margin: EdgeInsets.only(top: 434),
-                      child: TitleText(),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        FlatButton(
-          onPressed: () {},
-          child: Text('Get Started'),
-        )
       ],
     );
   }
