@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:flutter_svg_converter/src/ui_proxies/string_representation.dart';
+import 'package:flutter_svg_tool/src/ui_proxies/string_representation.dart';
 
 import 'custom_path.dart';
 

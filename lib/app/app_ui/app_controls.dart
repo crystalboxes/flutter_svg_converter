@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/scheduler/ticker.dart' show Ticker, TickerProvider;
-import 'package:flutter_svg_converter/app/util/conversion.dart';
+import 'package:flutter_svg_tool/app/util/conversion.dart';
 import 'package:provider/provider.dart';
 
 import 'clipboard_button.dart';

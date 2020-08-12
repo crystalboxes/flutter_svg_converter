@@ -1,6 +1,6 @@
 {
-    "name": "flutter_svg_converter",
-    "short_name": "flutter_svg_converter",
+    "name": "flutter_svg_tool",
+    "short_name": "flutter_svg_tool",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

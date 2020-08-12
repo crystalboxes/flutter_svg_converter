@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg_converter/app/util/get_tiger.dart';
+import 'package:flutter_svg_tool/app/util/get_tiger.dart';
 import 'package:provider/provider.dart';
 
 import 'app_controls.dart';

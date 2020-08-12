@@ -2,9 +2,9 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:flutter_svg_converter/src/ui_proxies/custom_canvas.dart';
-import 'package:flutter_svg_converter/src/ui_proxies/custom_shader.dart';
-import 'package:flutter_svg_converter/src/ui_proxies/string_representation.dart';
+import 'package:flutter_svg_tool/src/ui_proxies/custom_canvas.dart';
+import 'package:flutter_svg_tool/src/ui_proxies/custom_shader.dart';
+import 'package:flutter_svg_tool/src/ui_proxies/string_representation.dart';
 import 'package:meta/meta.dart';
 import 'package:vector_math/vector_math_64.dart';
 

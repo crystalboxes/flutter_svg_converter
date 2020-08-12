@@ -1,6 +1,6 @@
-name: flutter_svg_converter
+name: flutter_svg_tool
 description: A web app that converts SVG source into Flutter Custom Painter canvas commands.
-homepage: https://github.com/crystalboxes/flutter_svg_converter
+homepage: https://github.com/crystalboxes/flutter_svg_tool
 version: 0.18.0
 
 dependencies:

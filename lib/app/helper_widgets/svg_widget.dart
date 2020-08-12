@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg_converter/app/helper_widgets/custom_picture_view.dart';
-import 'package:flutter_svg_converter/app/util/conversion.dart';
+import 'package:flutter_svg_tool/app/helper_widgets/custom_picture_view.dart';
+import 'package:flutter_svg_tool/app/util/conversion.dart';
 import 'dart:ui' as ui;
 import '../../flutter_svg.dart';
 
