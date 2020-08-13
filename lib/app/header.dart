@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'util/constants.dart';
 import 'assets/icons.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Logo extends StatelessWidget {
   @override
@@ -47,17 +48,18 @@ class Logo extends StatelessWidget {
 }
 
 class Menu extends StatelessWidget {
-  Widget getMenuItem(String text) => Container(
+  Widget getMenuItem(String text, String url) => Container(
         margin: EdgeInsets.only(left: 20, right: 20),
-        child: Text(text),
+        child: InkWell(child: Text(text), onTap: () => launch(url)),
       );
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        getMenuItem('About'),
-        getMenuItem('Github'),
+        // getMenuItem('About'),
+        getMenuItem(
+            'Github', 'https://github.com/crystalboxes/flutter_svg_tool'),
       ],
     );
   }

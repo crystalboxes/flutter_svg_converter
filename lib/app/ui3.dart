@@ -107,51 +107,54 @@ class SVGToolLayout extends StatelessWidget {
         ),
       ];
     }
-    return Column(
-      children: [
-        SVGToolAppbar(),
-        Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                ...bodyWidgets,
-                Container(
-                  margin: EdgeInsets.only(bottom: 150),
-                  constraints:
-                      BoxConstraints(maxWidth: layoutMaxWidth, minHeight: 600),
-                  child: SVGToolAppUI(
-                    showsCodeOnInit: isMinimal,
-                  ),
-                ),
-                if (isMinimal)
+    return Container(
+      margin: EdgeInsets.only(left: 20, right: 20),
+      child: Column(
+        children: [
+          SVGToolAppbar(),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  ...bodyWidgets,
                   Container(
-                    height: 200,
+                    margin: EdgeInsets.only(bottom: 150),
+                    constraints: BoxConstraints(
+                        maxWidth: layoutMaxWidth, minHeight: 600),
+                    child: SVGToolAppUI(
+                      showsCodeOnInit: isMinimal,
+                    ),
                   ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.only(top: 16, bottom: 16),
-                          color: Colors.black,
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Text(
-                              'Built with Flutter, based on flutter_svg. Made by @crystalboxes',
-                              style: TextStyle(color: Colors.white),
+                  if (isMinimal)
+                    Container(
+                      height: 200,
+                    ),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            padding: EdgeInsets.only(top: 16, bottom: 16),
+                            color: Colors.black,
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                'Built with Flutter, based on flutter_svg. Made by @crystalboxes',
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
                           ),
-                        ),
-                      )
-                    ],
-                  ),
-                )
-              ],
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-        )
-      ],
+          )
+        ],
+      ),
     );
   }
 }

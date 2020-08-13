@@ -13,7 +13,7 @@ class TitleScreen extends StatelessWidget {
     return Column(
       children: [
         Container(
-          margin: EdgeInsets.only(top: 100),
+          margin: EdgeInsets.only(top: 40),
           child: Stack(
             children: [
               Column(
@@ -47,12 +47,22 @@ class TitleScreen extends StatelessWidget {
             ],
           ),
         ),
-        FlatButton(
-          onPressed: () {
-            Navigator.of(context).pushNamed('/app-only');
-          },
-          child: Text('Get Started'),
-        )
+        Container(
+          margin: EdgeInsets.only(top: 24),
+          child: RaisedButton(
+            color: Colors.black,
+            padding: EdgeInsets.only(left: 40, right: 40, top: 12, bottom: 12),
+            textColor: Colors.white,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(40)),
+                side: BorderSide(color: Colors.black)),
+            onPressed: () {
+              Navigator.of(context).pushNamed('/app-only');
+            },
+            child: Text('Get Started'),
+          ),
+        ),
+        Container(height: 100),
       ],
     );
   }
