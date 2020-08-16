@@ -67,6 +67,7 @@ class _TextInfo {
     this.offset,
     this.transform,
   );
+
   final DrawableStyle style;
   final Offset offset;
   final Matrix4 transform;
@@ -78,6 +79,8 @@ class _TextInfo {
 class _Elements {
   static Future<void> svg(SvgParserState parserState) {
     final DrawableViewport viewBox = parseViewBox(parserState.attributes);
+    final String id = parserState.attribute('id', def: '');
+    
     // TODO(dnfield): Support nested SVG elements. https://github.com/dnfield/flutter_svg/issues/132
     if (parserState._root != null) {
       FlutterError.reportError(FlutterErrorDetails(
@@ -97,6 +100,7 @@ class _Elements {
         _SvgGroupTuple(
           'svg',
           DrawableGroup(
+            id,
             <Drawable>[],
             parseStyle(
               parserState.attributes,
@@ -110,6 +114,7 @@ class _Elements {
       return null;
     }
     parserState._root = DrawableRoot(
+      id,
       viewBox,
       <Drawable>[],
       parserState._definitions,
@@ -127,6 +132,7 @@ class _Elements {
   static Future<void> g(SvgParserState parserState) {
     final DrawableParent parent = parserState.currentGroup;
     final DrawableGroup group = DrawableGroup(
+      parserState.attribute('id', def: ''),
       <Drawable>[],
       parseStyle(
         parserState.attributes,
@@ -146,6 +152,7 @@ class _Elements {
   static Future<void> symbol(SvgParserState parserState) {
     final DrawableParent parent = parserState.currentGroup;
     final DrawableGroup group = DrawableGroup(
+      parserState.attribute('id', def: ''),
       <Drawable>[],
       parseStyle(
         parserState.attributes,
@@ -184,6 +191,7 @@ class _Elements {
     final DrawableStyleable ref =
         parserState._definitions.getDrawable('url($xlinkHref)');
     final DrawableGroup group = DrawableGroup(
+      parserState.attribute('id', def: ''),
       <Drawable>[ref.mergeStyle(style)],
       style,
       transform: transform.storage,
@@ -487,6 +495,7 @@ class _Elements {
     final DrawableParent parent = parserState._parentDrawables.last.drawable;
     final DrawableStyle parentStyle = parent.style;
     final DrawableRasterImage drawable = DrawableRasterImage(
+      parserState.attribute('id', def: ''),
       image,
       offset,
       parseStyle(
@@ -538,6 +547,7 @@ class _Elements {
       );
       parserState.currentGroup.children.add(
         DrawableText(
+          parserState.attribute('id', def: ''),
           fill,
           stroke,
           lastTextInfo.offset,
@@ -839,6 +849,7 @@ class SvgParserState {
     final DrawableStyle parentStyle = parent.style;
     final CustomPath path = pathFunc(attributes);
     final DrawableStyleable drawable = DrawableShape(
+      getAttribute(attributes, 'id', def: ''),
       path,
       parseStyle(
         attributes,
