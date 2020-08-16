@@ -86,8 +86,8 @@ class SVGToolAppbar extends StatelessWidget with PreferredSizeWidget {
           children: [
             Expanded(
               child: Container(
+                margin: EdgeInsets.only(left: 20, right: 20),
                 constraints: BoxConstraints(maxWidth: layoutMaxWidth),
-                // color: Colors.orange,
                 padding: EdgeInsets.only(top: 16, bottom: 16),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

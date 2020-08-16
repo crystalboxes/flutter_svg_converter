@@ -108,7 +108,6 @@ class SVGToolLayout extends StatelessWidget {
       ];
     }
     return Container(
-      margin: EdgeInsets.only(left: 20, right: 20),
       child: Column(
         children: [
           SVGToolAppbar(),
@@ -116,13 +115,20 @@ class SVGToolLayout extends StatelessWidget {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  ...bodyWidgets,
                   Container(
-                    margin: EdgeInsets.only(bottom: 150),
-                    constraints: BoxConstraints(
-                        maxWidth: layoutMaxWidth, minHeight: 600),
-                    child: SVGToolAppUI(
-                      showsCodeOnInit: isMinimal,
+                    margin: EdgeInsets.only(left: 20, right: 20),
+                    child: Column(
+                      children: [
+                        ...bodyWidgets,
+                        Container(
+                          margin: EdgeInsets.only(bottom: 150),
+                          constraints: BoxConstraints(
+                              maxWidth: layoutMaxWidth, minHeight: 600),
+                          child: SVGToolAppUI(
+                            showsCodeOnInit: isMinimal,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   if (isMinimal)
