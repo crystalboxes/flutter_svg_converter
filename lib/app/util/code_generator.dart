@@ -104,7 +104,7 @@ class CustomPictureCodeGenerator {
     cmds =
         cmds.split('\n').fold('', (value, element) => '$value\n    $element');
 
-    var colArray = 'const colors = <Color>[\n';
+    var colArray = 'var colors = <Color>[\n';
 
     _colorsArray.forEach((element) {
       colArray += '    ${stringRepresentationOf(element)},\n';
